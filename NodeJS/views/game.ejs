@@ -1,0 +1,125 @@
+<!DOCTYPE html>                                                                                 <!--Type de document html-->
+<html>                                                                                          <!--Début du html-->
+    <head>                                                                                      <!--Début de l'entete-->
+        <title>Irregulars Verbs</title>                                                         <!--Encodage utf8-->
+        <meta charset ="utf-8"/>                                                                <!--Titre de la page-->
+        <link rel="stylesheet" href="/css/style.css">
+    </head>                                                                                     <!--Fin de l'entete-->
+
+    <body>                                                                                      <!--Contenu de la page-->
+        <section>                                                                               <!--Nouvelle section-->
+
+            <h1>LEARN IRREGULARS VERBS</h1>                                                     <!--Texte en police h0-->
+
+        </section>
+        <section class = "title">                                                               <!--Nouvelle section qui a pour class title-->
+
+            <column>Infinitif</column>                                                          <!--Colonne Infinitif-->
+            <column>Prétérit</column>                                                           <!--Colonne Prétérit-->
+            <column>Participe</column>                                                          <!--Colonne Participe-->
+            <column>Traduction</column>                                                         <!--Colonne Traduction-->
+
+        </section>
+
+        <section>                                                                               <!--Nouvelle section-->
+            <box id = "i1"></box>                                                               <!--Emplacements pour les affichages des conjugaisons avec des id de i1 à i4-->
+            <box id = "i2"></box>
+            <box id = "i3"></box>
+            <box id = "i4"></box>
+        </section>
+        <section>                                                                               <!--Nouvelle section-->
+
+            <h1>Réponse :</h1>                                                                  <!--Texte "Réponse" en police h1-->
+            <input id = "answer"></input>                                                       <!--Input pour la réponse du joueur-->
+
+        </section>
+        <section>                                                                               <!--Nouvelle section-->
+
+            <button id = "b1">GENERER</button>        <!--Bouton générer qui refresh la page-->
+            <button id = "b2">VALIDER</button>                                                  <!--Bouton valider pour valider la réponse-->
+
+        </section>
+
+        <script src="/js/socket.io.js"></script>                 <!--Appel du module scket-->
+
+        <script>
+            let socket = io();                                                                   /*Connexion de socket au site*/
+            let firstTime = true 
+            let profilUsed; 
+
+            function demarrer() {
+                reloadProfil()
+                document.getElementById('b1').addEventListener('click', reloadVerbs)            /*Quand le bouton d'id b1 est cliqué, on déclenche la fonction reloadVerbs*/
+                document.getElementById('b2').addEventListener('click', envoyerResult)          /*Quand le bouton d'id b2 est cliqué, on déclenche la fonction envoyerResult*                                                               /*Appeler la fonction genererVerbes*/
+                window.addEventListener('keypress', verifEntree)
+                setTimeout(() => { reloadVerbs() }, 500);
+            }
+
+            function verifEntree(event) {
+                if(event.key == "Enter") envoyerResult()
+            }
+
+            function reloadProfil() { socket.emit('getProfil') }
+
+            socket.on('getProfil', (profilUser) => { profilUsed = profilUser })
+
+            function envoyerResult() {
+                reloadProfil()
+                setTimeout(() => {
+                    if(profilUsed.tour < 9) {
+                        profilUsed.tour++
+                        let reponse = document.getElementById('answer').value
+                        if(reponse == "") {
+                            alert('Vous devez rentrer une réponse !')
+                        } else {
+                            document.getElementById('answer').value = ""
+                            profilUsed.annulerVerb = false
+                            profilUsed.reponse.push(reponse)
+                            socket.emit('reloadVerbs', profilUsed)
+                        }
+                    } else {
+                        let reponse = document.getElementById('answer').value
+                        profilUsed.annulerVerb = false
+                        profilUsed.reponse.push(reponse)
+                        socket.emit('refreshProfil', profilUsed)
+                        document.location.href = "/result/"
+                    }
+                }, 500)
+            }
+
+
+
+
+            function reloadVerbs() {
+                reloadProfil()
+                setTimeout(() => {
+                    //console.log(profilUsed)
+                    profilUsed.annulerVerb = true
+                    if(firstTime == true) {
+                        firstTime = false
+                        profilUsed.annulerVerb = false
+                    }
+                    socket.emit('reloadVerbs', profilUsed)
+                }, 500)                                                                   /**/            /*On emet 'reloadVerbs'*/
+            }
+            socket.on('nouveauVerbes', (profil) => { genererVerbes(profil) })              /*Quand le serveur est actif et quel l'on recoit 'nouveauVerbes', on récupère profil et on appel la fonction générerVerbes en transmettant profil*/
+
+            function genererVerbes(profil) {
+                if(profil.annulerVerb == true) { profil.correction.pop() }
+                let randomConju = Math.floor(Math.random() * 4)                                 /*Colonne aléatoire*/
+                let listVerbs = ['infinitif', 'preterit', 'participe', 'traduction']
+                profil.correction.push(profil.currentVerbs[listVerbs[randomConju]])                     /*Ajoute le mot à trouver dans le json*/
+                profil.reponsePos.push(listVerbs[randomConju])
+                socket.emit('refreshProfil', profil)
+                profil.currentVerbs[listVerbs[randomConju]] = "???"                                        /*Supprime le mot dans les verbes pour qu'il puisse le trouver (afficher ??? a la place)*/
+                document.getElementById('i1').innerHTML = profil.currentVerbs.infinitif         /*Placer le verbe à l'infinitif dans son emplacement HTML*/
+                document.getElementById('i2').innerHTML = profil.currentVerbs.preterit          /*Placer le verbe au prétérit dans son emplacement HTML*/
+                document.getElementById('i3').innerHTML = profil.currentVerbs.participe         /*Placer le verbe au participe dans son emplacement HTML*/
+                document.getElementById('i4').innerHTML = profil.currentVerbs.traduction        /*Placer la traduction dans son emplacement HTML*/
+                console.log(profil)
+                reloadProfil()//met a jour correction
+            }
+            window.addEventListener('load', demarrer)                                           /*Quand la page est chargée, on apell la fonction démarrer*/
+        </script>
+    </body>
+</html>

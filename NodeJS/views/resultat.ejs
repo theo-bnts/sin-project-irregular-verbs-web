@@ -1,0 +1,101 @@
+<!DOCTYPE html>                                                                                                 
+<html>                                                                                                          
+    <head>                                                                                                      
+        <meta charset="utf-8" />                                                                                
+        <title>Acceuil</title>                                                                                  
+    </head>                                                                                                     
+    <body>                                                                                                      
+        <ul id="resultPos">
+
+        </ul>
+
+        <p id="score"></p>
+
+
+        <script src="/js/socket.io.js"></script>                        
+        <script>       
+            let socket = io();                                                                                                                                         
+            let result;
+            let afficherResult;
+            let listBeforeTrie = []
+            let listVerbes = []
+            function demarrer() {   
+                result = <%- JSON.stringify(resultatsUser) %>
+                setTimeout(() => {
+                    formatage()
+                }, 500);
+            }
+            
+            function formatage() {
+                socket.emit('requestVerb', result.idVerbs)
+            }
+
+            socket.on('verbe', (v) => {
+                listBeforeTrie.unshift(v)
+                if(result.idVerbs.length == listBeforeTrie.length) {
+                    //on fait le trie pour récupérer dans l'ordre de idVerbs
+                    let idVerbsInOrder = result.idVerbs
+                    let idVerbsWithoutOrder = []
+                    for(let i=0;i<listBeforeTrie.length;i++) {
+                        idVerbsWithoutOrder.push(listBeforeTrie[i].id)
+                    }
+                    for(let i=0;i<listBeforeTrie.length;i++) {
+                        let verbToPushPos = idVerbsWithoutOrder.indexOf(idVerbsInOrder[i])
+                        listVerbes.unshift(listBeforeTrie[verbToPushPos])
+                    }                
+                    afficherResultat()
+                }
+            })
+
+            function afficherResultat() {
+                console.log('Affichae des résultats')
+                console.log(listVerbes)
+                console.log(result)
+                let score = 0
+                for(let i=0; i<listVerbes.length;i++) {
+                    let infinitif = listVerbes[i].infinitif
+                    let preterit = listVerbes[i].preterit
+                    let participe = listVerbes[i].participe
+                    let traduction = listVerbes[i].traduction
+                    let statut = "✔"
+                    console.log(`'${result.correction[i]}' | '${result.reponse[i]}'`)
+                    //Ici le console
+                    //puis test de comparaison
+                    if(result.correction[i] == result.reponse[i]) {
+                        score++
+                    } else {//nn je vais demander à Ryfax^^
+                        statut = "✘"
+                        switch(result.reponsePos[i]) {
+                            case "infinitif":
+                                infinitif = `<s>${result.reponse[i]}</s> -> ${listVerbes[i].infinitif}`
+                            break;
+                            case "preterit":
+                                preterit = `<s>${result.reponse[i]}</s> -> ${listVerbes[i].preterit}`
+                            break;
+                            case "participe":
+                                participe = `<s>${result.reponse[i]}</s> -> ${listVerbes[i].participe}`
+                            break;
+                            case "traduction":
+                                traduction = `<s>${result.reponse[i]}</s> -> ${listVerbes[i].traduction}`
+                            break;
+                        }
+                    }
+
+                    let phrase = `${i} : ${infinitif} | ${preterit} | ${participe} | ${traduction}    ${statut}`
+
+                    let li = document.createElement('li')
+                    li.innerHTML = phrase;
+
+                    let section = document.getElementById('resultPos');
+                    section.appendChild(li);
+                }
+                //montre le score
+                document.getElementById('score').innerHTML = `Score ${score}/10`
+            }
+
+            window.addEventListener('load', demarrer)                                                           
+        </script>
+        
+    </body>
+    
+</html>

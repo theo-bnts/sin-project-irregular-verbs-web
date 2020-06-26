@@ -1,0 +1,33 @@
+<!DOCTYPE html>                                                                                                 <!--Type de document html-->
+<html>                                                                                                          <!--Début du html-->
+    <head>                                                                                                      <!--Début de l'entete-->
+        <meta charset="utf-8" />                                                                                <!--Encodage utf8-->
+        <title>Acceuil</title>                                                                                  <!--Titre de la page-->
+    </head>                                                                                                     <!--Fin de l'entete-->
+    <body>                                                                                                      <!--Contenu de la page-->
+        <form action="/game" method="post" id="formulaire_pseudo">                                              <!--Début du formulaire-->
+            <input type="text" name="pseudo" id="pseudo" placeholder="Votre pseudo..." size="50" autofocus />   <!--Input pseudo avec focus imédiat-->
+            <input type="submit" id="launch" value="Commencer" />                                               <!--Bouton commencer-->
+        </form>                                                                                                 <!--Fin du formulaire-->
+        <script src="http://localhost:8080/socket.io/socket.io.js"></script>                                                         <!--Appel à socket.io-->
+
+        <script>                                                                                                //javascript
+            let socket = io.connect();                                                   //connexion de socket au site pour la lecture et transmission d'évènement
+
+            function demarrer() {                                                                               //fonction demarrer
+                document.getElementById('formulaire_pseudo').addEventListener('sumbit', launchGame)             //quand envoi du contenu de formulaire, appeler la fonction launchGame
+            }
+
+            function launchGame() {                                                                             //fonction launchGame
+                let pseudo = document.getElementById('pseudo').value                                            //récupérer le contenu de l'input psuedo
+                if(pseudo == null || pseudo == undefined) return alert('Veuillez entrer un pseudo')             //si le contenu de pseudo est vide, on en alerte lutilisateur
+                socket.emit('pseudo', pseudo)      
+                return false;                                                                                   //envoyer 'pseudo' avec son contenu
+            }
+
+            window.addEventListener('load', demarrer)                                                           //quand la page est chargée, appeler la fonction demarrer
+        </script>
+        
+    </body>
+    
+</html>
