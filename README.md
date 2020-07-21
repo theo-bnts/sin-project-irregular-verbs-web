@@ -4,17 +4,17 @@ Réviser ses verbes irréguliers directement depuis le web - 2 versions (Javascr
 # Javascript
 # Variables
 ListVerbes  
-Stocker la liste des verbes  
+> Stocker la liste des verbes  
 ListConjug  
-Liste des conjugaisons  
+> Liste des conjugaisons  
 Profil  
-Contient tous les infos sur la session  
+> Contient tous les infos sur la session  
 RandomVerbe  
-Nombre aletoire entre 1 et 64  
+> Nombre aletoire entre 1 et 64  
 ChoosenConjug  
-Conjugaison aléatoire
+> Conjugaison aléatoire
 Reponse  
-Contient la réponse du joueur
+> Contient la réponse du joueur
 
 # NodeJS
 1 - Installer NodeJS  
