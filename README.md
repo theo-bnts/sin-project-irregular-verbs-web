@@ -3,17 +3,17 @@ Réviser ses verbes irréguliers directement depuis le web - 2 versions (Javascr
 
 # Javascript
 # Variables
-ListVerbes
+# ListVerbes
 Stocker la liste des verbes
-ListConjug
+# ListConjug
 Liste des conjugaisons
-Profil
+# Profil
 Contient tous les infos sur la session
-RandomVerbe
+# RandomVerbe
 Nombre aletoire entre 1 et 64
-ChoosenConjug
+# ChoosenConjug
 Conjugaison aléatoire
-Reponse
+# Reponse
 Contient la réponse du joueur
 
 # NodeJS
