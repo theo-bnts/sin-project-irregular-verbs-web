@@ -2,7 +2,7 @@
 Réviser ses verbes irréguliers directement depuis le web - 2 versions (Javascript et NodeJS)
 
 # Javascript
-# Variables
+- # Variables
 - ListVerbes  
 Stocker la liste des verbes  
 - ListConjug  
