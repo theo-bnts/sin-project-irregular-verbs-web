@@ -17,7 +17,7 @@ Conjugaison aléatoire
 Contient la réponse du joueur
 
 # NodeJS
-1 - Installer NodeJS  
-2 - Lancer install.bat pour installer les modules  
-3 - Lancer launch.bat pour lancer le serveur  
-4 - Lancer http://localhost:8080  
+- Installer NodeJS  
+- Lancer install.bat pour installer les modules  
+- Lancer launch.bat pour lancer le serveur  
+- Lancer http://localhost:8080  
